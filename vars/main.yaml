@@ -1,0 +1,2 @@
+tkn_tmp_dir: /tmp/tekton-cli
+tkn_tmp_extract_dir: "{{ tkn_tmp_dir }}/extract"

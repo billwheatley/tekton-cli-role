@@ -1,0 +1,5 @@
+- name: Ensure bash-completion Package is Installed
+  apt:
+    update_cache: yes
+    name: bash-completion
+    state: present

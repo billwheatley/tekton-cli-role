@@ -1,0 +1,65 @@
+---
+- name: "Create Tekton Temp Dir at {{ tkn_tmp_dir }}"
+  file:
+    path: "{{ tkn_tmp_dir }}"
+    state: directory
+
+- name: "Create Tekton Extract Temp Dir at {{ tkn_tmp_extract_dir }}"
+  file:
+    path: "{{ tkn_tmp_extract_dir }}"
+    state: directory
+
+- name: Get Latest Tekton CLI Release Version Meta Data
+  uri:
+    url: https://api.github.com/repos/tektoncd/cli/releases/latest
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: version_result
+
+- name: Download Latest Tekton CLI tarball
+  get_url:
+    url:  https://github.com/tektoncd/cli/releases/download/{{ version_result.json.tag_name }}/tkn_{{ version_result.json.tag_name |replace('v', '') }}_Linux_x86_64.tar.gz
+    dest: "{{ tkn_tmp_dir }}"
+    mode: '0444'
+
+# Since tekton cli archive includes other files we don't need  
+# and there is no way of just extracting tkn without knowing every file you want to exclude
+# this is going to use a temp dir and cherry pick just tkn binary
+- name: Extract Tekton cli tarball to temp dir
+  unarchive:
+    src: "{{ tkn_tmp_dir }}/tkn_{{ version_result.json.tag_name |replace('v', '') }}_Linux_x86_64.tar.gz"
+    dest: "{{ tkn_tmp_extract_dir }}"
+
+- name: Ensure Tekton Binary is in /usr/local/bin
+  copy:
+    src: "{{ tkn_tmp_extract_dir }}/tkn"
+    dest: /usr/local/bin/tkn
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure Tekton Temp Dir is Removed
+  file:
+    path: "{{ tkn_tmp_dir }}"
+    state: absent
+
+- name: 'Ensure the Bash Completion Package is Installed via ({{ ansible_pkg_mgr }})'
+  include_tasks: 'pkg-install-{{ ansible_pkg_mgr }}.yml'
+  when: ansible_pkg_mgr in ('apt', 'yum', 'dnf')
+
+- fail:
+    msg: WARNING This role is not setup to deal with package manager {{ ansible_pkg_mgr }} can not verify bash-completion Package is installed, bash completions may not work
+  ignore_errors: yes
+  when: ansible_pkg_mgr not in ('apt', 'yum', 'dnf')
+
+- name: Setup bash Completion for tkn
+  shell: tkn completion bash > /etc/bash_completion.d/tkn_completion
+
+- name: Ensure bash Completion Script Has Proper File Permissions
+  file:
+    path: /etc/bash_completion.d/tkn_completion
+    owner: root
+    group: root
+    mode: '0644'
