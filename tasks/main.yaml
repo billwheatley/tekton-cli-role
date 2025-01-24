@@ -46,7 +46,7 @@
     state: absent
 
 - name: 'Ensure the Bash Completion Package is Installed via ({{ ansible_pkg_mgr }})'
-  include_tasks: 'pkg-install-{{ ansible_pkg_mgr }}.yml'
+  include_tasks: 'pkg-install-{{ ansible_pkg_mgr }}.yaml'
   when: ansible_pkg_mgr in ('apt', 'yum', 'dnf', 'dnf5')
 
 - fail:
