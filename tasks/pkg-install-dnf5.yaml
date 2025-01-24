@@ -1,0 +1,4 @@
+- name: Ensure bash-completion Package is Installed
+  dnf:
+    name: bash-completion
+    state: present

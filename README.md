@@ -9,7 +9,7 @@ After using this role you should have `tkn` in your path and ready to use.  For 
 Requirements
 ------------
 
-- If you want bash completion you must have distribution with `dnf` or `yum` or `apt` package manger OR the bash completion package installed if you are using a different package manager.
+- If you want bash completion you must have distribution with `dnf`, `dnf5`, `yum` or `apt` package manger OR the bash completion package installed if you are using a different package manager.
 
 Role Variables
 --------------

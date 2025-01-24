@@ -47,12 +47,12 @@
 
 - name: 'Ensure the Bash Completion Package is Installed via ({{ ansible_pkg_mgr }})'
   include_tasks: 'pkg-install-{{ ansible_pkg_mgr }}.yml'
-  when: ansible_pkg_mgr in ('apt', 'yum', 'dnf')
+  when: ansible_pkg_mgr in ('apt', 'yum', 'dnf', 'dnf5')
 
 - fail:
     msg: WARNING This role is not setup to deal with package manager {{ ansible_pkg_mgr }} can not verify bash-completion Package is installed, bash completions may not work
   ignore_errors: yes
-  when: ansible_pkg_mgr not in ('apt', 'yum', 'dnf')
+  when: ansible_pkg_mgr not in ('apt', 'yum', 'dnf', 'dnf5')
 
 - name: Setup bash Completion for tkn
   shell: tkn completion bash > /etc/bash_completion.d/tkn_completion
