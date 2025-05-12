@@ -55,7 +55,7 @@
   when: ansible_pkg_mgr not in ('apt', 'yum', 'dnf', 'dnf5')
 
 - name: Setup bash Completion for tkn
-  shell: tkn completion bash > /etc/bash_completion.d/tkn_completion
+  shell: /usr/local/bin/tkn completion bash > /etc/bash_completion.d/tkn_completion
 
 - name: Ensure bash Completion Script Has Proper File Permissions
   file:
